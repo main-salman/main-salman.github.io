@@ -1,26 +1,257 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Word Match Checker</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #1d1d1f;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 48px;
+      max-width: 680px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #86868b;
+      font-size: 17px;
+      margin-bottom: 40px;
+      font-weight: 400;
+    }
+
+    .input-group {
+      margin-bottom: 24px;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #1d1d1f;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 16px;
+      border: 1px solid #d2d2d7;
+      border-radius: 12px;
+      font-size: 16px;
+      font-family: inherit;
+      resize: vertical;
+      transition: all 0.3s ease;
+      background: #fff;
+      min-height: 120px;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #0071e3;
+      box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+    }
+
+    textarea::placeholder {
+      color: #86868b;
+    }
+
+    .button-container {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    button {
+      flex: 1;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    #checkBtn {
+      background: #0071e3;
+      color: white;
+    }
+
+    #checkBtn:hover {
+      background: #0077ed;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(0, 113, 227, 0.3);
+    }
+
+    #checkBtn:active {
+      transform: translateY(0);
+    }
+
+    #clearBtn {
+      background: #f5f5f7;
+      color: #1d1d1f;
+    }
+
+    #clearBtn:hover {
+      background: #e8e8ed;
+    }
+
+    .result-container {
+      margin-top: 32px;
+      padding: 24px;
+      background: #f5f5f7;
+      border-radius: 12px;
+      display: none;
+      animation: slideIn 0.4s ease;
+    }
+
+    .result-container.show {
+      display: block;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result-count {
+      font-size: 32px;
+      font-weight: 600;
+      color: #0071e3;
+      margin-bottom: 8px;
+    }
+
+    .result-label {
+      font-size: 14px;
+      color: #86868b;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .word-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .word-tag {
+      background: white;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 15px;
+      color: #1d1d1f;
+      font-weight: 500;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 32px 24px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .button-container {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h2>Word Match Checker</h2>
-  <textarea id="text1" rows="6" cols="40" placeholder="Enter first text..."></textarea><br><br>
-  <textarea id="text2" rows="6" cols="40" placeholder="Enter second text..."></textarea><br><br>
-  <button id="checkBtn">Check Matches</button>
-  <p id="result"></p>
+  <div class="container">
+    <h1>Word Match Checker</h1>
+    <p class="subtitle">Compare two texts and find matching words</p>
+    
+    <div class="input-group">
+      <label class="input-label" for="text1">First Text</label>
+      <textarea id="text1" placeholder="Enter your first text here..."></textarea>
+    </div>
+
+    <div class="input-group">
+      <label class="input-label" for="text2">Second Text</label>
+      <textarea id="text2" placeholder="Enter your second text here..."></textarea>
+    </div>
+
+    <div class="button-container">
+      <button id="checkBtn">Check Matches</button>
+      <button id="clearBtn">Clear All</button>
+    </div>
+
+    <div id="resultContainer" class="result-container">
+      <div class="result-count" id="matchCount">0</div>
+      <div class="result-label">Matching Words</div>
+      <div class="word-tags" id="wordList"></div>
+    </div>
+  </div>
 
   <script>
     document.getElementById("checkBtn").onclick = function() {
-        var t1 = document.getElementById("text1").value.toLowerCase().split(/\W+/);
-        var t2 = document.getElementById("text2").value.toLowerCase().split(/\W+/);
-        t1 = t1.filter(w => w.length > 0);
-        t2 = t2.filter(w => w.length > 0);
-        var matches = t1.filter(w => t2.indexOf(w) >= 0);
-        var unique = [...new Set(matches)];
-        document.getElementById("result").innerHTML =
-            "Matching words: " + unique.length + "<br>" + unique.join(", ");
+      var t1 = document.getElementById("text1").value.toLowerCase().split(/\W+/);
+      var t2 = document.getElementById("text2").value.toLowerCase().split(/\W+/);
+      t1 = t1.filter(w => w.length > 0);
+      t2 = t2.filter(w => w.length > 0);
+      var matches = t1.filter(w => t2.indexOf(w) >= 0);
+      var unique = [...new Set(matches)];
+      
+      var resultContainer = document.getElementById("resultContainer");
+      var matchCount = document.getElementById("matchCount");
+      var wordList = document.getElementById("wordList");
+      
+      matchCount.textContent = unique.length;
+      
+      if (unique.length > 0) {
+        wordList.innerHTML = unique.map(word => 
+          `<span class="word-tag">${word}</span>`
+        ).join('');
+        resultContainer.classList.add('show');
+      } else {
+        wordList.innerHTML = '<span class="word-tag">No matches found</span>';
+        resultContainer.classList.add('show');
+      }
+    };
+
+    document.getElementById("clearBtn").onclick = function() {
+      document.getElementById("text1").value = '';
+      document.getElementById("text2").value = '';
+      document.getElementById("resultContainer").classList.remove('show');
     };
   </script>
 </body>
